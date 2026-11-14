@@ -1,0 +1,14 @@
+{
+  "brand": "일상툴",
+  "model": "claude-sonnet-5-5",
+  "auto_approve": true,
+  "card_cta": "프로필 링크에서 무료로 써보세요",
+  "card_cta_sub": "일상툴 →",
+  "slots": [
+    { "day": "월", "time": "12:30", "image": true, "type": "공감형" },
+    { "day": "수", "time": "19:00", "image": false, "type": "팁·정보형" },
+    { "day": "금", "time": "12:30", "image": true, "type": "사용법형" },
+    { "day": "토", "time": "10:00", "image": false, "type": "개발 비하인드형" },
+    { "day": "일", "time": "19:00", "image": true, "type": "공감형" }
+  ]
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "slug": "review-policy",
+    "name": "리뷰 운영정책 고지문 생성기",
+    "url": "https://ilsangtool.github.io/tools/review-policy/",
+    "target": "배달앱·네이버 플레이스를 운영하는 자영업자",
+    "problem": "악성 리뷰에 대응할 기준과 문구가 없어 막막함",
+    "features": ["무료", "회원가입 없음", "업종만 고르면 1분 만에 고지문 완성"],
+    "color": "#2F6FED",
+    "active": true
+  }
+]

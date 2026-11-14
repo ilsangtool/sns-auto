@@ -1,0 +1,13 @@
+{
+  "name": "sns-auto",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "node scripts/generate.mjs",
+    "render": "node scripts/render-cards.mjs",
+    "publish": "node scripts/publish.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.50.0"
+  }
+}

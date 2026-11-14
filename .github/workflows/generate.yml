@@ -1,0 +1,64 @@
+name: 주간 글 자동 생성
+
+on:
+  schedule:
+    - cron: '0 12 * * 0'   # 매주 일요일 21:00(한국시간) → 다음 주 월~일 글 생성
+  workflow_dispatch:
+    inputs:
+      week:
+        description: '대상 주간'
+        type: choice
+        options: [next, this]
+        default: next
+      force:
+        description: '이미 있어도 다시 생성 (게시 전 글만 교체)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: repo-write
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 글 생성 (Claude)
+        run: node scripts/generate.mjs
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          WEEK: ${{ inputs.week || 'next' }}
+          FORCE: ${{ inputs.force && 'true' || 'false' }}
+
+      - name: 카드 이미지 도구 설치
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq fonts-noto-cjk > /dev/null
+          npm install --no-audit --no-fund
+          npx playwright install chromium
+
+      - name: 카드 이미지 생성
+        run: node scripts/render-cards.mjs
+
+      - name: 저장
+        run: |
+          git config user.name "sns-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add posts.json images
+          git diff --cached --quiet && exit 0
+          git commit -m "주간 글 생성 [skip ci]"
+          git pull --rebase && git push
+
+  pages:
+    needs: generate
+    uses: ./.github/workflows/pages.yml

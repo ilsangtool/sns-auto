@@ -1,0 +1,34 @@
+name: 토큰 자동 갱신
+
+# 장기 토큰은 60일 뒤 만료 → 매월 1일·15일에 갱신해서 Secrets에 다시 저장
+on:
+  schedule:
+    - cron: '0 0 1,15 * *'
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 인스타그램 토큰 갱신
+        env:
+          OLD: ${{ secrets.IG_ACCESS_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          NEW=$(curl -sf "https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=${OLD}" | jq -r '.access_token // empty')
+          [ -n "$NEW" ] || { echo "인스타그램 토큰 갱신 실패 — 토큰을 새로 발급하세요"; exit 1; }
+          echo "::add-mask::$NEW"
+          gh secret set IG_ACCESS_TOKEN --body "$NEW" --repo "$GITHUB_REPOSITORY"
+          echo "✅ 인스타그램 토큰 갱신 완료"
+
+      - name: 스레드 토큰 갱신
+        if: always()
+        env:
+          OLD: ${{ secrets.THREADS_ACCESS_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          NEW=$(curl -sf "https://graph.threads.net/refresh_access_token?grant_type=th_refresh_token&access_token=${OLD}" | jq -r '.access_token // empty')
+          [ -n "$NEW" ] || { echo "스레드 토큰 갱신 실패 — 토큰을 새로 발급하세요"; exit 1; }
+          echo "::add-mask::$NEW"
+          gh secret set THREADS_ACCESS_TOKEN --body "$NEW" --repo "$GITHUB_REPOSITORY"
+          echo "✅ 스레드 토큰 갱신 완료"
