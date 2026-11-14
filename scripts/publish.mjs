@@ -43,8 +43,8 @@ function imageUrl(name) {
 }
 
 // 컨테이너(업로드 대기 객체)가 처리 완료될 때까지 대기
-async function waitReady(base, token, id, field) {
-  for (let i = 0; i < 20; i++) {
+async function waitReady(base, token, id, field, tries = 20) {
+  for (let i = 0; i < tries; i++) {
     const d = await call('GET', `${base}/${id}`, { fields: field, access_token: token });
     const s = d[field];
     if (s === 'FINISHED') return;
@@ -57,6 +57,16 @@ async function waitReady(base, token, id, field) {
 // ───────── 인스타그램 ─────────
 async function publishInstagram(post) {
   if (!IG.token) throw new Error('IG_ACCESS_TOKEN 없음');
+  if (post.video) {
+    // 릴스: 영상 처리에 시간이 걸려 최대 5분 대기
+    const caption = post.instagram_caption || post.threads_text;
+    const { id: containerId } = await call('POST', `${IG.base}/${IG.user}/media`, {
+      media_type: 'REELS', video_url: imageUrl(post.video), caption, share_to_feed: 'true', thumb_offset: '1500', access_token: IG.token,
+    });
+    await waitReady(IG.base, IG.token, containerId, 'status_code', 60);
+    const { id } = await call('POST', `${IG.base}/${IG.user}/media_publish`, { creation_id: containerId, access_token: IG.token });
+    return id;
+  }
   const images = post.images || [];
   if (images.length === 0) throw new Error('인스타그램은 이미지가 1장 이상 필요합니다');
   if (images.some((n) => !/\.jpe?g$/i.test(n))) throw new Error('인스타그램 API는 JPEG 이미지만 받습니다');
@@ -91,7 +101,9 @@ async function publishThreads(post) {
   const url = `${TH.base}/${TH.user}/threads`;
 
   let params;
-  if (images.length === 0) {
+  if (post.video) {
+    params = { media_type: 'VIDEO', video_url: imageUrl(post.video), text };
+  } else if (images.length === 0) {
     params = { media_type: 'TEXT', text };
     if (post.link) params.link_attachment = post.link;   // 링크 미리보기 카드
   } else if (images.length === 1) {
@@ -105,7 +117,7 @@ async function publishThreads(post) {
     params = { media_type: 'CAROUSEL', children: children.join(','), text };
   }
   const { id: containerId } = await call('POST', url, { ...params, access_token: t });
-  await waitReady(TH.base, t, containerId, 'status');
+  await waitReady(TH.base, t, containerId, 'status', post.video ? 60 : 20);
   const { id } = await call('POST', `${TH.base}/${TH.user}/threads_publish`, { creation_id: containerId, access_token: t });
   return id;
 }
@@ -134,7 +146,7 @@ if (due.length === 0) {
 
 // 이미지가 Pages에 실제로 배포됐는지 확인 (배포 전이면 다음 실행 때 다시 시도, 실패 횟수에 넣지 않음)
 async function imagesReady(post) {
-  for (const img of post.images || []) {
+  for (const img of [...(post.images || []), ...(post.video ? [post.video] : [])]) {
     try {
       const res = await fetch(imageUrl(img), { method: 'HEAD' });
       if (!res.ok) return false;
@@ -156,7 +168,7 @@ for (const post of due) {
     if (!fn) { console.log(`⚠️ 지원하지 않는 플랫폼: ${platform}`); continue; }
 
     if (DRY_RUN) {
-      console.log(`🧪 [미리보기] ${post.id} → ${platform}\n${platform === 'instagram' ? post.instagram_caption : post.threads_text}\n이미지: ${(post.images || []).map((n) => imageUrl(n)).join(', ') || '없음'}\n`);
+      console.log(`🧪 [미리보기] ${post.id} → ${platform}\n${platform === 'instagram' ? post.instagram_caption : post.threads_text}\n이미지: ${(post.images || []).map((n) => imageUrl(n)).join(', ') || '없음'}${post.video ? `\n영상: ${imageUrl(post.video)}` : ''}\n`);
       continue;
     }
 

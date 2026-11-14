@@ -41,14 +41,17 @@ jobs:
           WEEK: ${{ inputs.week || 'next' }}
           FORCE: ${{ inputs.force && 'true' || 'false' }}
 
-      - name: 카드 이미지 도구 설치
+      - name: 카드 이미지·릴스 도구 설치
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq fonts-noto-cjk > /dev/null
+          sudo apt-get update -qq && sudo apt-get install -y -qq fonts-noto-cjk ffmpeg > /dev/null
           npm install --no-audit --no-fund
           npx playwright install chromium
 
       - name: 카드 이미지 생성
         run: node scripts/render-cards.mjs
+
+      - name: 릴스 영상 생성
+        run: node scripts/render-reels.mjs
 
       - name: 저장
         run: |

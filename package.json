@@ -5,6 +5,7 @@
   "scripts": {
     "generate": "node scripts/generate.mjs",
     "render": "node scripts/render-cards.mjs",
+    "render-reels": "node scripts/render-reels.mjs",
     "publish": "node scripts/publish.mjs"
   },
   "dependencies": {

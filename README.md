@@ -3,7 +3,7 @@
 글 작성 → 카드 이미지 제작 → 스레드·인스타 게시 → 토큰 갱신까지 **사람 손 없이** 돌아갑니다.
 
 ```
-[매주 일 21:00]  Claude가 다음 주 글 5개 작성 → 카드 이미지(JPG) 생성 → Pages에 이미지 배포
+[매주 일 21:00]  Claude가 다음 주 글 5개 작성 → 카드 이미지(JPG)·릴스 영상(MP4) 생성 → Pages에 배포
 [매시간]         게시 시각이 지난 글을 스레드·인스타에 게시 → 결과를 posts.json에 기록
 [매월 1·15일]    인스타·스레드 토큰 자동 갱신
 ```
@@ -14,6 +14,7 @@
 | `config.json` | 게시 요일·시각·글 유형, 자동 승인 여부 | 가끔 |
 | `prompts/system.md` | 글 말투·규칙 (Claude 지시문) | 말투 바꿀 때 |
 | `templates/card.html` | 카드 이미지 디자인 | 디자인 바꿀 때 |
+| `templates/reel.html` | 릴스 영상(1080×1920, 약 17초) 디자인 | 디자인 바꿀 때 |
 | `posts.json` | 게시 대기열 + 결과 기록 | 자동 관리 |
 | `scripts/` · `.github/workflows/` | 실행 코드 | 없음 |
 
@@ -80,6 +81,12 @@ Settings → Secrets and variables → Actions
 ```
 - 홍보를 잠시 멈출 앱은 `"active": false`
 - 앱 페이지 내용도 자동으로 읽어서 글에 반영합니다
+
+### 릴스(영상) 글
+- `config.json` 슬롯에 `"video": true` → 그 요일은 세로 영상으로 인스타 릴스·스레드 영상 게시 (기본: 금요일 사용법형)
+- 영상은 Claude가 쓴 문구(첫 장면 → 1·2·3 → 마무리)로 `templates/reel.html`을 프레임 단위 녹화 → FFmpeg로 MP4(H.264·AAC 무음) 변환
+- 영상 하나만 다시 만들기: 로컬에서 `ONLY_ID=글ID node scripts/render-reels.mjs`
+- 배경음은 넣지 않음 (저작권 사고 방지). 자막형이라 소리 없이도 이해되게 구성
 
 ### 게시 전에 검토하고 싶을 때
 `config.json`의 `"auto_approve": false` → 생성된 글이 `"paused": true` 상태로 대기

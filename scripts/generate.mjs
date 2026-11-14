@@ -77,15 +77,18 @@ const recent = posts.slice(-12).map((p) => p.threads_text).filter(Boolean);
 const request = {
   apps: appInfo,
   recent_posts: recent,
-  slots: slots.map((s, i) => ({ index: i, app: s.app.slug, type: s.type, with_image: s.image })),
+  slots: slots.map((s, i) => ({ index: i, app: s.app.slug, type: s.type, with_image: !!s.image && !s.video, with_video: !!s.video })),
 };
 
 const userPrompt = `아래 JSON의 slots 순서 그대로 게시글을 만들어라.
-with_image가 true면 threads_text, instagram_caption, card를 모두 쓰고,
-false면 threads_text만 쓴다(instagram_caption, card는 null).
+with_image가 true면 threads_text, instagram_caption, card를 쓰고(reel은 null),
+with_video가 true면 threads_text, instagram_caption, reel을 쓰고(card는 null),
+둘 다 false면 threads_text만 쓴다(instagram_caption, card, reel은 null).
 
 출력은 설명 없이 JSON 배열 하나만:
-[{"index":0,"threads_text":"...","instagram_caption":"..." 또는 null,"card":{"headline":"...","sub":"...","points":["...","...","..."]} 또는 null}]
+[{"index":0,"threads_text":"...","instagram_caption":"..." 또는 null,
+  "card":{"headline":"...","sub":"...","points":["...","...","..."]} 또는 null,
+  "reel":{"hook":"...","steps":[{"title":"...","desc":"..."},{"title":"...","desc":"..."},{"title":"...","desc":"..."}],"outro":"..."} 또는 null}]
 
 입력:
 ${JSON.stringify(request, null, 2)}`;
@@ -120,7 +123,20 @@ function validate(items) {
     const len = [...(it.threads_text || '')].length;
     if (len < 20 || len > 500) problems.push(`index ${i}: threads_text 길이 ${len}자 (20~500자)`);
     if (/https?:\/\//.test(it.threads_text || '')) problems.push(`index ${i}: threads_text에 URL 포함`);
-    if (slot.image) {
+    if (slot.video) {
+      if (!it.instagram_caption) problems.push(`index ${i}: instagram_caption 누락`);
+      const r = it.reel;
+      if (!r?.hook || !r?.outro || !Array.isArray(r.steps) || r.steps.length !== 3 || r.steps.some((x) => !x?.title || !x?.desc))
+        problems.push(`index ${i}: reel 형식 오류`);
+      else {
+        if ([...r.hook].length > 24) problems.push(`index ${i}: reel.hook이 너무 김 (24자 이내)`);
+        if ([...r.outro].length > 22) problems.push(`index ${i}: reel.outro가 너무 김 (22자 이내)`);
+        r.steps.forEach((x, k) => {
+          if ([...x.title].length > 16) problems.push(`index ${i}: reel.steps[${k}].title이 너무 김 (16자 이내)`);
+          if ([...x.desc].length > 30) problems.push(`index ${i}: reel.steps[${k}].desc가 너무 김 (30자 이내)`);
+        });
+      }
+    } else if (slot.image) {
       if (!it.instagram_caption) problems.push(`index ${i}: instagram_caption 누락`);
       const c = it.card;
       if (!c?.headline || !c?.sub || !Array.isArray(c.points) || c.points.length !== 3)
@@ -158,12 +174,18 @@ const newPosts = slots.map((slot, i) => {
     scheduled_at: slot.at,
     app: slot.app.name,
     type: slot.type,
-    platforms: slot.image ? ['threads', 'instagram'] : ['threads'],
+    platforms: slot.image || slot.video ? ['threads', 'instagram'] : ['threads'],
     threads_text: it.threads_text.trim(),
     link: slot.app.url,
     images: [],
   };
-  if (slot.image) {
+  if (slot.video) {
+    post.instagram_caption = it.instagram_caption.trim();
+    // 마지막 장면 배지는 apps.json의 장점(사실)에서만 가져온다
+    const badge = (slot.app.features || []).filter((f) => [...f].length <= 8).slice(0, 2).join(' · ');
+    post.reel = { ...it.reel, app: slot.app.name, color: slot.app.color || '#2F6FED', badge };
+    post.video = `${slot.id}.mp4`;
+  } else if (slot.image) {
     post.instagram_caption = it.instagram_caption.trim();
     post.card = { ...it.card, app: slot.app.name, color: slot.app.color || '#2F6FED' };
     post.images = [`${slot.id}.jpg`];
