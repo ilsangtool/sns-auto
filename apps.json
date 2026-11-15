@@ -3,10 +3,110 @@
     "slug": "review-policy",
     "name": "리뷰 운영정책 고지문 생성기",
     "url": "https://ilsangtool.github.io/tools/review-policy/",
-    "target": "배달앱·네이버 플레이스를 운영하는 자영업자",
+    "target": "배달앱·네이버 플레이스·쇼핑몰을 운영하는 자영업자",
     "problem": "악성 리뷰에 대응할 기준과 문구가 없어 막막함",
-    "features": ["무료", "회원가입 없음", "업종만 고르면 1분 만에 고지문 완성"],
-    "color": "#2F6FED",
+    "features": ["무료", "회원가입 없음", "업종만 고르면 고지문 완성"],
+    "color": "#6d1f2c",
+    "active": true
+  },
+  {
+    "slug": "refund-policy",
+    "name": "환불·교환 규정 고지문 생성기",
+    "url": "https://ilsangtool.github.io/tools/refund-policy/",
+    "target": "온라인 쇼핑몰·스마트스토어·오프라인 매장 운영자",
+    "problem": "교환·환불 기준을 어떻게 써야 법에 맞는지 몰라 손님과 분쟁이 생김",
+    "features": ["무료", "회원가입 없음", "전자상거래법 기준 반영", "인쇄용·HTML 코드 제공"],
+    "color": "#6d1f2c",
+    "active": true
+  },
+  {
+    "slug": "noshow-policy",
+    "name": "예약·노쇼 규정 문구 생성기",
+    "url": "https://ilsangtool.github.io/tools/noshow-policy/",
+    "target": "식당·오마카세·미용실 등 예약제로 운영하는 사장님",
+    "problem": "노쇼 위약금이나 예약금 환불 기준을 정해 두지 않아 손해를 봄",
+    "features": ["무료", "회원가입 없음", "소비자분쟁해결기준 반영", "예약 안내 문자까지 작성"],
+    "color": "#6d1f2c",
+    "active": true
+  },
+  {
+    "slug": "closed-notice",
+    "name": "휴무·임시휴업 안내문 만들기",
+    "url": "https://ilsangtool.github.io/tools/closed-notice/",
+    "target": "매장 문에 휴무 안내를 붙이거나 SNS에 공지하는 사장님",
+    "problem": "휴무·공사·영업시간 변경 때마다 안내문을 새로 만들기 번거로움",
+    "features": ["무료", "회원가입 없음", "A4 인쇄", "SNS용 정사각 이미지 저장"],
+    "color": "#6d1f2c",
+    "active": true
+  },
+  {
+    "slug": "weekly-pay",
+    "name": "알바 주휴수당·월급 계산기",
+    "url": "https://ilsangtool.github.io/tools/weekly-pay/",
+    "target": "아르바이트생과 알바를 고용한 소상공인",
+    "problem": "주휴수당이 붙는지, 세금 떼고 얼마 받는지 계산이 헷갈림",
+    "features": ["무료", "회원가입 없음", "최저임금 자동 반영", "3.3%·4대보험 실수령액"],
+    "color": "#2f6b4f",
+    "active": true
+  },
+  {
+    "slug": "dutch-pay",
+    "name": "더치페이·모임 정산 계산기",
+    "url": "https://ilsangtool.github.io/tools/dutch-pay/",
+    "target": "회식·여행·모임 총무를 맡은 사람",
+    "problem": "1차·2차 결제자와 참석자가 달라 누가 누구에게 얼마 보내야 할지 복잡함",
+    "features": ["무료", "회원가입 없음", "송금 횟수 최소화", "카톡 공유 문구"],
+    "color": "#2f6b4f",
+    "active": true
+  },
+  {
+    "slug": "date-calc",
+    "name": "D-day·전역일·만나이 계산기",
+    "url": "https://ilsangtool.github.io/tools/date-calc/",
+    "target": "기념일·시험일을 세는 사람, 군인 가족·연인",
+    "problem": "100일·1000일, 전역일, 만 나이를 매번 손으로 세기 번거로움",
+    "features": ["무료", "회원가입 없음", "군별 전역일 계산", "기념일 한 번에 보기"],
+    "color": "#2f6b4f",
+    "active": true
+  },
+  {
+    "slug": "image-resize",
+    "name": "사진 용량 줄이기·HEIC 변환",
+    "url": "https://ilsangtool.github.io/tools/image-resize/",
+    "target": "서류 제출·쇼핑몰 등록 때 사진 용량 제한에 걸리는 사람, 아이폰 사용자",
+    "problem": "사진 용량이 커서 업로드가 안 되거나 아이폰 HEIC 파일이 안 열림",
+    "features": ["무료", "회원가입 없음", "서버에 올리지 않음", "여러 장 한 번에"],
+    "color": "#1f3a5f",
+    "active": true
+  },
+  {
+    "slug": "id-photo",
+    "name": "증명사진 규격 자르기",
+    "url": "https://ilsangtool.github.io/tools/id-photo/",
+    "target": "여권·이력서·비자 사진을 직접 준비하는 사람",
+    "problem": "사진관에 가지 않고 규격에 맞게 자르고 인화용 판을 만들기 어려움",
+    "features": ["무료", "회원가입 없음", "여권·비자 규격", "4×6 인화용 판"],
+    "color": "#1f3a5f",
+    "active": true
+  },
+  {
+    "slug": "pdf-to-hwp",
+    "name": "PDF 한글 변환·나누기·합치기",
+    "url": "https://ilsangtool.github.io/tools/pdf-to-hwp/",
+    "target": "PDF 공문·서식을 한글로 고쳐 써야 하는 직장인·공무원·학생",
+    "problem": "PDF를 한글 문서로 바꾸거나 나누고 합치려면 유료 프로그램이 필요함",
+    "features": ["무료", "회원가입 없음", "서버에 올리지 않음", "나누기·합치기 지원"],
+    "color": "#1f3a5f",
+    "active": true
+  },
+  {
+    "slug": "short-video",
+    "name": "숏폼 영상 만들기",
+    "url": "https://ilsangtool.github.io/tools/short-video/",
+    "target": "가게·행사·모집을 홍보하고 싶은 소상공인과 기관 담당자",
+    "problem": "홍보 영상을 만들 시간과 편집 기술, 사진 자료가 없음",
+    "features": ["무료", "회원가입 없음", "사진 없이도 제작", "저작권 걱정 없는 배경음"],
+    "color": "#5b3a5e",
     "active": true
   }
 ]
