@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<!-- 카드 A: 에디토리얼 (사이트 2안과 같은 화면) · 1080×1350 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1350px; }
+  body {
+    --c: #6d1f2c; --bg: #faf7f1; --ink: #2a2324; --sub: #6b605c; --line: #d6cabd;
+    --serif: "Noto Serif KR", "Noto Serif CJK KR", serif;
+    font-family: "Pretendard", "Noto Sans CJK KR", sans-serif;
+    background: var(--bg); color: var(--ink); word-break: keep-all; overflow: hidden;
+    padding: 96px 96px 0; display: flex; flex-direction: column;
+  }
+  .mk { width: 1em; height: 1em; color: var(--c); }
+  h1, .sub, li span { text-wrap: balance; }
+  .top { display: flex; justify-content: space-between; align-items: center; font-size: 30px; padding-bottom: 28px; border-bottom: 2px solid var(--ink); }
+  .top b { font-family: var(--serif); font-weight: 700; font-size: 36px; display: flex; gap: 14px; align-items: center; }
+  .top span { color: var(--sub); }
+  .main { flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 0; }
+  .kick { font-size: 30px; color: var(--c); font-weight: 600; margin-bottom: 32px; }
+  h1 { font-family: var(--serif); font-size: 92px; font-weight: 600; line-height: 1.24; letter-spacing: -0.03em; }
+  .sub { font-size: 38px; color: var(--sub); margin-top: 40px; line-height: 1.5; }
+  ol { list-style: none; margin-top: 64px; border-top: 1px solid var(--line); }
+  li { display: flex; gap: 32px; align-items: baseline; font-size: 38px; font-weight: 500; padding: 26px 0; border-bottom: 1px solid var(--line); }
+  li em { font-family: var(--serif); font-style: normal; color: var(--c); font-size: 34px; font-weight: 600; width: 48px; flex: none; }
+  .cta { display: flex; justify-content: space-between; align-items: center; padding: 40px 0 56px; font-size: 36px; font-weight: 600; }
+  .cta u { text-decoration: none; border-bottom: 3px solid var(--c); color: var(--c); padding-bottom: 4px; }
+  .cta span { font-size: 30px; color: var(--sub); }
+</style>
+</head>
+<body>
+  <div class="top">
+    <b><svg class="mk" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="currentColor"/><path d="M9 10h14M9 16h14M9 22h9" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>{{brand}}</b>
+    <span>{{cat}}</span>
+  </div>
+  <div class="main">
+    <div class="kick">{{app}}</div>
+    <h1>{{headline}}</h1>
+    <p class="sub">{{sub}}</p>
+    <ol>{{points}}</ol>
+  </div>
+  <div class="cta"><u>{{cta}}</u><span>{{cta_sub}}</span></div>
+</body>
+</html>

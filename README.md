@@ -13,7 +13,7 @@
 | `apps.json` | 홍보할 앱 목록 | ⭐ 앱 추가할 때만 |
 | `config.json` | 게시 요일·시각·글 유형, 자동 승인 여부 | 가끔 |
 | `prompts/system.md` | 글 말투·규칙 (Claude 지시문) | 말투 바꿀 때 |
-| `templates/card.html` | 카드 이미지 디자인 | 디자인 바꿀 때 |
+| `templates/card-a.html` · `card-b.html` · `reel.html` | 카드(A 에디토리얼·B 버건디, 번갈아 사용)·릴스(B) 디자인 | 디자인 바꿀 때 |
 | `templates/reel.html` | 릴스 영상(1080×1920, 약 17초) 디자인 | 디자인 바꿀 때 |
 | `posts.json` | 게시 대기열 + 결과 기록 | 자동 관리 |
 | `scripts/` · `.github/workflows/` | 실행 코드 | 없음 |
@@ -71,16 +71,23 @@ Settings → Secrets and variables → Actions
 {
   "slug": "영문-이름",
   "name": "앱 이름",
+  "category": "카드 오른쪽 위 분류 (예: 매장 운영)",
   "url": "https://ilsangtool.github.io/tools/폴더/",
   "target": "누가 쓰는지",
   "problem": "어떤 고민을 해결하는지",
   "features": ["장점1", "장점2", "장점3"],
-  "color": "#카드색상",
   "active": true
 }
 ```
 - 홍보를 잠시 멈출 앱은 `"active": false`
 - 앱 페이지 내용도 자동으로 읽어서 글에 반영합니다
+
+### 같은 내용은 한 번만 게시
+- 글을 만들 때: 이전 본문·카드 제목·릴스 첫 문장과 같으면 Claude에게 다시 쓰게 함
+- 게시할 때: 같은 플랫폼에 같은 본문이 이미 올라갔으면 `skipped`로 건너뜀
+- 게시 직전에 `publishing`(게시 중) 표시를 저장소에 먼저 올리고, 이 저장이 실패하면 게시하지 않음
+- 최종 게시 요청을 보낸 뒤 오류가 나면 `unknown`으로 남기고 재시도하지 않음 → 계정에서 올라갔는지 직접 확인
+- 카드 디자인은 글마다 하나만 씀 (A·B를 게시 순서대로 번갈아 배정)
 
 ### 릴스(영상) 글
 - `config.json` 슬롯에 `"video": true` → 그 요일은 세로 영상으로 인스타 릴스·스레드 영상 게시 (기본: 금요일 사용법형)

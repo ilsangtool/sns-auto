@@ -73,10 +73,18 @@ for (const a of usedApps) {
 
 const recent = posts.slice(-12).map((p) => p.threads_text).filter(Boolean);
 
+// ───────── 같은 내용 재게시 방지 ─────────
+// 띄어쓰기·문장부호·이모지를 지운 글자로 비교한다. 이전에 쓴 본문·제목·첫 장면과 같으면 다시 쓰게 한다.
+const norm = (s) => String(s ?? '').toLowerCase().replace(/[^0-9a-z가-힣]/g, '');
+const pastTexts = new Set(posts.map((p) => norm(p.threads_text)).filter(Boolean));
+const pastHeads = new Set(posts.flatMap((p) => [p.card?.headline, p.reel?.hook]).map(norm).filter(Boolean));
+const usedHeads = [...new Set(posts.slice(-60).flatMap((p) => [p.card?.headline, p.reel?.hook]).filter(Boolean))];
+
 // ───────── 3. Claude 호출 ─────────
 const request = {
   apps: appInfo,
   recent_posts: recent,
+  used_headlines: usedHeads,
   slots: slots.map((s, i) => ({ index: i, app: s.app.slug, type: s.type, with_image: !!s.image && !s.video, with_video: !!s.video })),
 };
 
@@ -84,6 +92,7 @@ const userPrompt = `아래 JSON의 slots 순서 그대로 게시글을 만들어
 with_image가 true면 threads_text, instagram_caption, card를 쓰고(reel은 null),
 with_video가 true면 threads_text, instagram_caption, reel을 쓰고(card는 null),
 둘 다 false면 threads_text만 쓴다(instagram_caption, card, reel은 null).
+recent_posts와 used_headlines에 이미 쓴 글·제목과 같거나 거의 같은 문장은 쓰지 마라. 같은 내용은 한 번만 게시한다.
 
 출력은 설명 없이 JSON 배열 하나만:
 [{"index":0,"threads_text":"...","instagram_caption":"..." 또는 null,
@@ -121,6 +130,10 @@ function validate(items) {
     const it = items.find((x) => x.index === i);
     if (!it) return problems.push(`index ${i}: 누락`);
     const len = [...(it.threads_text || '')].length;
+    const head = it.card?.headline || it.reel?.hook;
+    if (pastTexts.has(norm(it.threads_text))) problems.push(`index ${i}: threads_text가 이전 글과 같음 (새로 써야 함)`);
+    if (head && pastHeads.has(norm(head))) problems.push(`index ${i}: 제목(${head})이 이전 글과 같음 (새로 써야 함)`);
+    if (items.some((x) => x !== it && norm(x.threads_text) === norm(it.threads_text))) problems.push(`index ${i}: 같은 주 다른 글과 본문이 같음`);
     if (len < 20 || len > 500) problems.push(`index ${i}: threads_text 길이 ${len}자 (20~500자)`);
     if (/https?:\/\//.test(it.threads_text || '')) problems.push(`index ${i}: threads_text에 URL 포함`);
     if (slot.video) {
@@ -166,6 +179,8 @@ for (let attempt = 1; attempt <= 3 && problems.length; attempt++) {
 if (problems.length) throw new Error('3회 시도 후에도 형식이 맞지 않아 중단합니다');
 
 // ───────── 4. posts.json에 추가 ─────────
+// 카드 디자인은 글마다 하나만: 지금까지 만든 카드 수를 이어 세어 A·B를 번갈아 쓴다
+let cardNo = posts.filter((p) => p.card).length;
 const newPosts = slots.map((slot, i) => {
   const it = items.find((x) => x.index === i);
   const post = {
@@ -183,11 +198,11 @@ const newPosts = slots.map((slot, i) => {
     post.instagram_caption = it.instagram_caption.trim();
     // 마지막 장면 배지는 apps.json의 장점(사실)에서만 가져온다
     const badge = (slot.app.features || []).filter((f) => [...f].length <= 8).slice(0, 2).join(' · ');
-    post.reel = { ...it.reel, app: slot.app.name, color: slot.app.color || '#2F6FED', badge };
+    post.reel = { ...it.reel, app: slot.app.name, cat: slot.app.category || '', badge };
     post.video = `${slot.id}.mp4`;
   } else if (slot.image) {
     post.instagram_caption = it.instagram_caption.trim();
-    post.card = { ...it.card, app: slot.app.name, color: slot.app.color || '#2F6FED' };
+    post.card = { ...it.card, app: slot.app.name, cat: slot.app.category || '', design: cardNo++ % 2 === 0 ? 'A' : 'B' };
     post.images = [`${slot.id}.jpg`];
   }
   if (!config.auto_approve) post.paused = true;
@@ -200,5 +215,5 @@ if (DRY_RUN) {
   const kept = FORCE ? posts.filter((p) => p.week !== weekKey || p.result) : posts;
   await fs.writeFile('posts.json', JSON.stringify([...kept, ...newPosts], null, 2) + '\n');
   console.log(`✅ ${weekKey} 주간 글 ${newPosts.length}개 생성`);
-  newPosts.forEach((p) => console.log(`  ${p.scheduled_at}  [${p.type}] ${p.app}  ${p.platforms.join('+')}`));
+  newPosts.forEach((p) => console.log(`  ${p.scheduled_at}  [${p.type}] ${p.app}  ${p.platforms.join('+')}${p.card ? `  카드 ${p.card.design}` : p.reel ? '  릴스' : ''}`));
 }

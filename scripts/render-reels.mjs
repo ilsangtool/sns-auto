@@ -14,7 +14,6 @@ const FPS = Number(process.env.REEL_FPS || 30);
 const ONLY = process.env.ONLY_ID || '';               // 특정 글만 다시 만들 때
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const safeColor = (c) => (/^#[0-9a-f]{3,8}$/i.test(c || '') ? c : '#2F6FED');
 
 const todo = posts.filter((p) => p.reel && p.video && !p.result && (ONLY ? p.id === ONLY : !existsSync(`${OUT}/${p.video}`)));
 if (!todo.length) { console.log('새로 만들 릴스 없음'); process.exit(0); }
@@ -48,13 +47,12 @@ const write = (stream, buf) => new Promise((res) => (stream.write(buf) ? res() :
 
 for (const p of todo) {
   const r = p.reel;
-  const data = JSON.stringify({ hook: r.hook, steps: r.steps, outro: r.outro, badge: r.badge || '' }).replace(/</g, '\\u003c');
+  const data = JSON.stringify({ app: r.app || p.app, hook: r.hook, steps: r.steps, outro: r.outro, badge: r.badge || '' }).replace(/</g, '\\u003c');
   const html = template
-    .replaceAll('{{color}}', safeColor(r.color))
+    .replaceAll('{{cat}}', esc(r.cat || ''))
     .replaceAll('{{brand}}', esc(config.brand || '일상툴'))
     .replaceAll('{{cta}}', esc(config.card_cta || '프로필 링크에서 무료로 써보세요'))
     .replaceAll('{{cta_sub}}', esc(config.card_cta_sub || '→'))
-    .replaceAll('{{app}}', esc(r.app || p.app))
     .replace('{{data}}', () => data);
 
   await page.setContent(html, { waitUntil: 'networkidle', timeout: 20000 }).catch(() => {});

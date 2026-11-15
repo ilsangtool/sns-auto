@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<!-- 카드 B: 버건디 색면 · 1080×1350 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1350px; }
+  body {
+    --c: #6d1f2c; --bg: #faf7f1;
+    --serif: "Noto Serif KR", "Noto Serif CJK KR", serif;
+    font-family: "Pretendard", "Noto Sans CJK KR", sans-serif;
+    background: var(--c); color: var(--bg); word-break: keep-all; overflow: hidden;
+    padding: 96px 96px 0; display: flex; flex-direction: column;
+  }
+  .mk { width: 1em; height: 1em; color: var(--bg); }
+  h1, .sub, li span { text-wrap: balance; }
+  .top { display: flex; justify-content: space-between; align-items: center; font-size: 30px; opacity: .9; }
+  .top b { font-family: var(--serif); font-size: 36px; font-weight: 700; display: flex; gap: 14px; align-items: center; }
+  .main { flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 0; }
+  .kick { align-self: flex-start; font-size: 28px; border: 2px solid rgba(250,247,241,.6); padding: 10px 24px; margin-bottom: 44px; }
+  h1 { font-family: var(--serif); font-size: 100px; font-weight: 600; line-height: 1.22; letter-spacing: -0.03em; }
+  .sub { font-size: 38px; opacity: .82; margin-top: 40px; line-height: 1.5; }
+  ol { list-style: none; margin-top: 64px; display: grid; gap: 20px; }
+  li { font-size: 38px; font-weight: 500; display: flex; gap: 24px; align-items: center; }
+  li em { display: none; }
+  li::before { content: ""; width: 28px; height: 2px; background: var(--bg); flex: none; }
+  .cta { margin: 0 -96px; padding: 44px 96px 56px; background: var(--bg); color: var(--c); display: flex; justify-content: space-between; font-size: 38px; font-weight: 700; }
+  .cta span { font-family: var(--serif); font-weight: 600; }
+</style>
+</head>
+<body>
+  <div class="top">
+    <b><svg class="mk" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="currentColor"/><path d="M9 10h14M9 16h14M9 22h9" stroke="#6d1f2c" stroke-width="2.6" stroke-linecap="round"/></svg>{{brand}}</b>
+    <span>{{cat}}</span>
+  </div>
+  <div class="main">
+    <div class="kick">{{app}}</div>
+    <h1>{{headline}}</h1>
+    <p class="sub">{{sub}}</p>
+    <ol>{{points}}</ol>
+  </div>
+  <div class="cta">{{cta}}<span>{{cta_sub}}</span></div>
+</body>
+</html>
