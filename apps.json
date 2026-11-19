@@ -144,15 +144,16 @@
   },
   {
     "slug": "pdf-to-hwp",
-    "name": "PDF 한글 변환·나누기·합치기",
+    "name": "PDF 변환·나누기·합치기",
     "category": "문서 도구",
     "url": "https://ilsangtool.github.io/tools/pdf-to-hwp/",
-    "target": "PDF 공문·서식을 한글로 고쳐 써야 하는 직장인·공무원·학생",
-    "problem": "PDF를 한글 문서로 바꾸거나 나누고 합치려면 유료 프로그램이 필요함",
+    "target": "PDF 공문·서식·자료를 고쳐 쓰거나 이미지·발표 자료로 써야 하는 직장인·공무원·학생",
+    "problem": "PDF를 한글·엑셀·이미지·PPT로 바꾸거나 나누고 합치려면 유료 프로그램이 필요함",
     "features": [
       "무료",
       "회원가입 없음",
       "서버에 올리지 않음",
+      "한글·워드·엑셀·JPG·PPT 변환",
       "나누기·합치기 지원"
     ],
     "color": "#6d1f2c",
